@@ -90,7 +90,7 @@ void main( void )
 
         // gérer la ccollision avec le sol
         // hauteur minimale à laquelle une collision avec le plancher survient
-        const float hauteurPlancher = 3.0;
+        float hauteurPlancher = 0.5 * pointsize;
         // ...
         float hauteurSph = VertexMod.z;
         if (hauteurSph <= hauteurPlancher)
