@@ -86,6 +86,7 @@ void main( void )
             vec3 N = posSphUnitaire / dist ; // normaliser N
             vec3 vitReflechieSphUnitaire = reflect ( vitSphUnitaire , N );
             vitesseMod = vitReflechieSphUnitaire / bDim ;
+            vitesseMod = vitesseMod / 2.0;
         }
 
         // gérer la ccollision avec le sol
@@ -98,6 +99,7 @@ void main( void )
             // inverser la direction de la vitesse et la position en Z
             VertexMod = vec3(VertexMod.x, VertexMod.y, -VertexMod.z);
             vitesseMod = vec3(vitesseMod.x, vitesseMod.y, -vitesseMod.z);
+            vitesseMod = vitesseMod / 2.0;
         }
 
         // appliquer la gravité

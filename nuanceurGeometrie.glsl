@@ -20,8 +20,8 @@ layout (std140) uniform varsUnif
 in Attribs {
     vec4 couleur;
     float tempsDeVieRestant;
-    //float sens; // du vol (partie 3)
-    //float hauteur; // de la particule dans le repère du monde (partie 3)
+    float sens; // du vol (partie 3)
+    float hauteur; // de la particule dans le repère du monde (partie 3)
 } AttribsIn[];
 
 out Attribs {
@@ -51,25 +51,37 @@ void main()
         gl_Position = matrProj * pos;
 
         // assigner la couleur courante
+        float A = AttribsIn[0].couleur.a * (AttribsIn[0].tempsDeVieRestant / tempsDeVieMax);
         AttribsOut.couleur = AttribsIn[0].couleur;
+        AttribsOut.couleur.a = A;
 
         // générer des coordonées de textures
         AttribsOut.texCoord = coins[i] + vec2( 0.5, 0.5 ); // on utilise coins[] pour définir des coordonnées de texture
 
         if ( texnumero == 1)
         {
-            const float nlutins = 20.0; // 20 positions de vol dans la texture
-            int num = int ( mod( 12.0 * AttribsIn[0].tempsDeVieRestant , nlutins ) ); // 12 Hz
-            AttribsOut.texCoord.s = ( AttribsOut.texCoord.s + num ) / nlutins ;
+            const float totalNlutins = 20.0; // 20 positions de vol dans la texture
+            if ( AttribsIn[0].hauteur >= hauteurVol){
+                const float nlutins = 20.0; // 20 positions de vol dans la texture
+                int num = int ( mod( 12.0 * AttribsIn[0].tempsDeVieRestant , nlutins ) ); // 12 Hz
+                AttribsOut.texCoord.s = AttribsIn[0].sens * ( AttribsOut.texCoord.s + num ) / totalNlutins ;
+            }
+            else {
+                const float nlutins = 15.0; // 15 positions de vol dans la texture
+                int num = int ( mod( 12.0 * AttribsIn[0].tempsDeVieRestant , nlutins ) ); // 12 Hz
+                AttribsOut.texCoord.s = AttribsIn[0].sens * ( AttribsOut.texCoord.s + num ) / totalNlutins ;
+            }
         }
 
         if ( texnumero == 2)
-        {
-            float angle = 4.0 * AttribsIn[0].tempsDeVieRestant;
-            mat2 matrix = mat2(cos(angle),-sin(angle),
-                                sin(angle),cos(angle));
-            vec2 vec = vec2(0.5, 0.5);
-            AttribsOut.texCoord.st = (AttribsOut.texCoord.st - vec) * matrix + vec;
+        {   
+            if ( AttribsIn[0].hauteur >= hauteurVol){ 
+                float angle = 4.0 * AttribsIn[0].tempsDeVieRestant;
+                mat2 matrix = mat2(cos(angle),-sin(angle),
+                                    sin(angle),cos(angle));
+                vec2 vec = vec2(0.5, 0.5);
+                AttribsOut.texCoord.st = (AttribsOut.texCoord.st - vec) * matrix + vec;
+            }
         }
 
         EmitVertex();
